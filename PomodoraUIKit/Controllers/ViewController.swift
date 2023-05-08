@@ -7,11 +7,22 @@
 
 import UIKit
 import SnapKit
-class ViewController: UIViewController {
-    let time = Time(minutes: 1, seconds: 0, type: .focusTime)
-    var remainingTime = 1500
+class ViewController: UIViewController, CAAnimationDelegate {
+    let time = Time(minutes: 23, seconds: 0)
     var timer = Timer()
+    var isTimerOn = false
+    var remainingTime = 5
     let interval = 1.0
+    var breakTime = 300
+    
+    
+    let foreProgressLayer = CAShapeLayer()
+    let backProgressLayer = CAShapeLayer()
+    let animation = CABasicAnimation(keyPath: "strokeEnd")
+    
+    
+    
+    var isAnimationStarted = false
     
     
     lazy private var image: UIImageView = {
@@ -23,9 +34,11 @@ class ViewController: UIViewController {
     
     lazy private var timeLabel: UILabel = {
        let label = UILabel()
-        label.text = "\(time.minutes):\(time.seconds)"
+        label.text = formatTime(time: remainingTime)
+        
         label.font = UIFont.systemFont(ofSize: 44, weight: .semibold)
         label.textColor = .white
+        
         return label
     }()
     
@@ -52,13 +65,14 @@ class ViewController: UIViewController {
         let button = UIButton()
          button.backgroundColor = .white
 
-         button.setImage(UIImage(systemName: "stop"), for: .normal)
+         button.setImage(UIImage(systemName: "stop.fill"), for: .normal)
          button.layer.cornerRadius = 28
          button.tintColor = .white
 
          button.layer.masksToBounds = true
          button.layer.backgroundColor = UIColor.white.withAlphaComponent(0.3).cgColor
-         
+        button.addTarget(self, action: #selector(stopButtonTapped), for: .touchUpInside)
+
        return button
     }()
     
@@ -66,48 +80,183 @@ class ViewController: UIViewController {
        let button = UIButton()
         button.backgroundColor = .white
 
-        button.setImage(UIImage(systemName: "play"), for: .normal)
+        button.setImage(UIImage(systemName: "play.fill"), for: .normal)
         button.layer.cornerRadius = 28
         button.tintColor = .white
 
         button.layer.masksToBounds = true
         button.layer.backgroundColor = UIColor.white.withAlphaComponent(0.3).cgColor
         
-        button.addTarget(self, action: #selector(startTimer), for: .touchUpInside)
+        button.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
        return button
     }()
+    
+    lazy private var focusLabel: UILabel = {
+       let label = UILabel()
+        label.text = "Focus on your task"
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.textColor = .white
+        return label
+    }()
+    
 //
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = .red
+        remainingTime = (time.minutes * 60) + time.seconds
+        view.backgroundColor = .black
         image.frame = view.bounds
-        [image,button, timeLabel, playButton, stopButton].forEach {
+        [image,button, timeLabel, playButton, stopButton, focusLabel].forEach {
             view.addSubview($0)
         }
         setupConstraints()
+        
+        
+        drawBackLayers()
     }
     
+    @objc func startButtonTapped() {
+        if !isTimerOn {
+            drawFrontLayers()
+            startTimer()
+            startResumeAnimation()
+            isTimerOn = true
+            playButton.setImage(UIImage(systemName: "pause.fill"), for: .normal)
+            
+        }
+        else {
+            timer.invalidate()
+            isTimerOn = false
+            pauseAnimation()
+            playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
 
-    @objc func startTimer() {
-        remainingTime = time.minutes * 60   
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self = self else { return }
-            if self.remainingTime > 0 {
-                self.remainingTime -= 1
-                let minutes = Int(self.remainingTime) / 60
-                let seconds = Int(self.remainingTime) % 60
-                self.timeLabel.text = String(format: "%02d:%02d", minutes, seconds)
-            } else {
-                self.timer.invalidate()
-                // Perform any necessary actions when the timer is finished
-            }
         }
     }
     
+    @objc func stopButtonTapped() {
+        timer.invalidate()
+        remainingTime = (time.minutes * 60) + time.seconds
+        timeLabel.text = formatTime(time: remainingTime)
+        playButton.setImage(UIImage(systemName: "play.fill"), for: .normal)
+        stopAnimatiom()
+        isTimerOn = false
+    }
+    
+    @objc func startTimer() {
+        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateTimer), userInfo: nil, repeats: true)
+    }
+    
+    @objc func updateTimer() {
+        remainingTime -= 1
+        
+        timeLabel.text = formatTime(time: remainingTime)
+        if remainingTime == 0 {
+            remainingTime = 300
+            timeLabel.text = formatTime(time: breakTime)
+            focusLabel.text = "Break time"
+            drawFrontLayers()
+            startAnimation()
+            startResumeAnimation()
+
+        }
+        
+    }
+    
+    func formatTime(time: Int) -> String {
+        let minutes = Int(time) / 60 % 60
+        let seconds = Int(time) % 60
+        return String(format: "%02i:%02i", minutes, seconds)
+    }
+
+ 
+//    bacground
+    
+    func drawBackLayers() {
+        backProgressLayer.path = UIBezierPath(arcCenter: CGPoint(x: view.frame.midX, y: view.frame.midY-111.5), radius: 124, startAngle: -90.degreesToRadians, endAngle: 270.degreesToRadians, clockwise: true).cgPath
+        
+        backProgressLayer.strokeColor = UIColor.white.withAlphaComponent(0.3).cgColor
+        backProgressLayer.fillColor = UIColor.clear.cgColor
+        backProgressLayer.lineWidth = 6
+        view.layer.addSublayer(backProgressLayer)
+    }
     
     
+//    front
+    
+    func drawFrontLayers() {
+        foreProgressLayer.path = UIBezierPath(arcCenter: CGPoint(x: view.frame.midX, y: view.frame.midY-70), radius: 124, startAngle: -90.degreesToRadians, endAngle: 270.degreesToRadians, clockwise: true).cgPath
+        foreProgressLayer.strokeColor = UIColor.white.cgColor
+        foreProgressLayer.fillColor = UIColor.clear.cgColor
+        foreProgressLayer.lineWidth = 6
+        view.layer.addSublayer(foreProgressLayer)
+    }
+    
+    func startResumeAnimation() {
+        if !isAnimationStarted {
+            startAnimation()
+        }
+        else {
+            resumeAnimation()
+        }
+    }
+    
+    func startAnimation() {
+        resetAnimation()
+        foreProgressLayer.strokeEnd = 0.0
+        animation.keyPath = "strokeEnd"
+        animation.fromValue = 0
+        animation.toValue = 1
+        
+        animation.delegate = self
+        
+        animation.duration = CFTimeInterval(remainingTime)
+        animation.isRemovedOnCompletion = false
+        animation.isAdditive = true
+        animation.fillMode = CAMediaTimingFillMode.forwards
+        foreProgressLayer.add(animation, forKey: "strokeEnd")
+        isAnimationStarted = true
+    }
+    
+    func resetAnimation() {
+        foreProgressLayer.speed = 1.0
+        foreProgressLayer.timeOffset = 0.0
+        foreProgressLayer.beginTime = 0.0
+        foreProgressLayer.strokeEnd = 0.0
+        isAnimationStarted = false
+    }
+    
+    
+    func pauseAnimation() {
+        let pausedTime = foreProgressLayer.convertTime(CACurrentMediaTime(), from: nil)
+        foreProgressLayer.speed = 0.0
+        foreProgressLayer.timeOffset = pausedTime
+    }
+    
+    
+    
+    
+    func resumeAnimation() {
+        let pausedTime = foreProgressLayer.timeOffset
+        foreProgressLayer.speed = 1.0
+        foreProgressLayer.timeOffset = 0.0
+        foreProgressLayer.beginTime  = 0.0
+        let timeSincePaused = foreProgressLayer.convertTime(CACurrentMediaTime(), to: nil) - pausedTime
+        foreProgressLayer.beginTime = timeSincePaused
+        
+    }
+    
+    func stopAnimatiom() {
+        foreProgressLayer.speed = 0
+        foreProgressLayer.timeOffset = 0
+        foreProgressLayer.beginTime = 0
+        foreProgressLayer.strokeEnd = 0
+        foreProgressLayer.removeAllAnimations()
+        isAnimationStarted = false
+    }
+    
+    internal func animationDidStop(_ anim: CAAnimation, finished flag: Bool) {
+        stopAnimatiom()
+    }
     
     
     func setupConstraints() {
@@ -139,6 +288,18 @@ class ViewController: UIViewController {
             make.trailing.equalToSuperview().inset(100)
             
         }
+        focusLabel.snp.makeConstraints { make in
+            make.top.equalTo(timeLabel.snp.bottom)
+            make.centerX.equalToSuperview()
+        }
     }
     
+}
+
+
+
+extension Int {
+    var degreesToRadians: CGFloat {
+        return CGFloat(self) * .pi / 180
+    }
 }

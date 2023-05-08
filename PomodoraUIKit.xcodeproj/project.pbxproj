@@ -19,6 +19,7 @@
 		416A862B2A06AF7200A9AE14 /* CircularProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416A862A2A06AF7200A9AE14 /* CircularProgressView.swift */; };
 		416A862D2A06BDE900A9AE14 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416A862C2A06BDE900A9AE14 /* SettingsViewController.swift */; };
 		416A862F2A06BEA100A9AE14 /* HistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416A862E2A06BEA100A9AE14 /* HistoryViewController.swift */; };
+		41C189C62A07ED2B002B07BF /* SettingsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41C189C52A07ED2B002B07BF /* SettingsTableViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		416A862A2A06AF7200A9AE14 /* CircularProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CircularProgressView.swift; sourceTree = "<group>"; };
 		416A862C2A06BDE900A9AE14 /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		416A862E2A06BEA100A9AE14 /* HistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryViewController.swift; sourceTree = "<group>"; };
+		41C189C52A07ED2B002B07BF /* SettingsTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,10 +70,12 @@
 		416A860E2A06A1E100A9AE14 /* PomodoraUIKit */ = {
 			isa = PBXGroup;
 			children = (
+				419AE6DF2A07A577005BA72B /* Model */,
 				416A860F2A06A1E100A9AE14 /* AppDelegate.swift */,
 				416A86112A06A1E100A9AE14 /* SceneDelegate.swift */,
 				416A862A2A06AF7200A9AE14 /* CircularProgressView.swift */,
 				416A86282A06AECA00A9AE14 /* MainTabBarViewController.swift */,
+				41C189C42A07ECF5002B07BF /* Views */,
 				416A86302A06C06F00A9AE14 /* Controllers */,
 				416A86262A06AAF500A9AE14 /* Time.swift */,
 				416A86152A06A1E100A9AE14 /* Main.storyboard */,
@@ -90,6 +94,21 @@
 				416A862E2A06BEA100A9AE14 /* HistoryViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		419AE6DF2A07A577005BA72B /* Model */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		41C189C42A07ECF5002B07BF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				41C189C52A07ED2B002B07BF /* SettingsTableViewCell.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,6 +191,7 @@
 				416A86142A06A1E100A9AE14 /* ViewController.swift in Sources */,
 				416A86102A06A1E100A9AE14 /* AppDelegate.swift in Sources */,
 				416A862D2A06BDE900A9AE14 /* SettingsViewController.swift in Sources */,
+				41C189C62A07ED2B002B07BF /* SettingsTableViewCell.swift in Sources */,
 				416A86272A06AAF500A9AE14 /* Time.swift in Sources */,
 				416A86122A06A1E100A9AE14 /* SceneDelegate.swift in Sources */,
 				416A862B2A06AF7200A9AE14 /* CircularProgressView.swift in Sources */,

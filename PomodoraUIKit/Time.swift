@@ -10,16 +10,14 @@ import Foundation
 class Time {
     var minutes: Int
     var seconds: Int
-    var type: Task
-    init(minutes: Int, seconds: Int, type: Task) {
+    init(minutes: Int, seconds: Int) {
         self.minutes = minutes
         self.seconds = seconds
-        self.type = type
     }
 }
 
 
-enum Task {
-    case focusTime
-    case breakTime
+enum Task: String {
+    case focusTime = "Focus time"
+    case breakTime = "Break Time"
 }
